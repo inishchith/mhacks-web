@@ -80,6 +80,11 @@ class AppProvider extends React.Component {
                             />
                             <Route
                                 exact
+                                path={routes.CHAT}
+                                component={ChatPage}
+                            />
+                            <Route
+                                exact
                                 path={routes.LOGIN}
                                 render={() => {
                                     const userData = store.getState().userState
