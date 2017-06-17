@@ -10,10 +10,9 @@ const Wrapper = styled.div`
     background: #F3F3F3;
     width: ${props => props.width}px;
     height: ${props => props.height}px;
-`
+`;
 
 class ChatPage extends React.Component {
-
     constructor(props) {
         super(props);
         this.state = { width: '0', height: '0' };

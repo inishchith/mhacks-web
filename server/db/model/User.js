@@ -3,6 +3,9 @@ var bcrypt = require('bcrypt'),
     mongoose = require('../index.js'),
     config = require('../../../config/default.js'),
     Email = require('../../interactors/email.js'),
+    emailResponses = require('../../responses/api/email.js'),
+    crypto = require('crypto'),
+    sanitizerPlugin = require('mongoose-sanitizer-plugin'),
     secret = config.secret;
 
 // Define the document Schema
@@ -16,6 +19,7 @@ var schema = new mongoose.Schema({
         }
     },
     email_verified: Boolean,
+    application_submitted: Boolean,
     verification_tokens: [
         {
             created_at: {
@@ -53,6 +57,8 @@ var schema = new mongoose.Schema({
         default: Date.now
     },
     birthday: Date,
+    major: String,
+    university: String,
     groups: [
         {
             name: String
@@ -60,7 +66,9 @@ var schema = new mongoose.Schema({
     ],
     meta: {
         ip: String
-    }
+    },
+    avatar: String,
+    resume: String
 });
 
 // Allow us to query by name
@@ -272,39 +280,59 @@ schema.methods.changePassword = function(password) {
 };
 
 schema.methods.sendVerificationEmail = function() {
-    Email.sendEmailTemplate(
-        config.confirmation_email_template,
-        {
-            confirmation_url: config.host +
+    if (config.development) {
+        console.log(
+            emailResponses.VERIFICATION_URL_CONSOLE,
+            config.host +
                 '/v1/auth/verify/' +
-                this.generateEmailVerificationToken(),
-            FIRST_NAME: this.full_name.split(' ')[0]
-        },
-        config.confirmation_email_subject,
-        this.email,
-        config.email_from,
-        config.email_from_name
-    ).catch(error => {
-        console.error('MANDRILL', error);
-        return false;
-    });
+                this.generateEmailVerificationToken()
+        );
+    } else {
+        Email.sendEmailTemplate(
+            config.confirmation_email_template,
+            {
+                confirmation_url: config.host +
+                    '/v1/auth/verify/' +
+                    this.generateEmailVerificationToken(),
+                FIRST_NAME: this.full_name
+                    ? this.full_name.split(' ')[0]
+                    : 'Hacker'
+            },
+            config.confirmation_email_subject,
+            this.email,
+            config.email_from,
+            config.email_from_name
+        ).catch(error => {
+            console.error('MANDRILL', error);
+            return false;
+        });
+    }
 };
 
 schema.methods.sendPasswordResetEmail = function() {
-    Email.sendEmailTemplate(
-        config.password_reset_email_template,
-        {
-            update_password_url: config.host +
+    if (config.development) {
+        console.log(
+            emailResponses.PASSWORDRESET_URL_CONSOLE,
+            config.host +
                 '/auth/passwordreset/' +
                 this.generatePasswordResetToken()
-        },
-        config.password_reset_email_subject,
-        this.email,
-        config.email_from,
-        config.email_from_name
-    ).catch(error => {
-        console.error('MANDRILL', error);
-    });
+        );
+    } else {
+        Email.sendEmailTemplate(
+            config.password_reset_email_template,
+            {
+                update_password_url: config.host +
+                    '/auth/passwordreset/' +
+                    this.generatePasswordResetToken()
+            },
+            config.password_reset_email_subject,
+            this.email,
+            config.email_from,
+            config.email_from_name
+        ).catch(error => {
+            console.error('MANDRILL', error);
+        });
+    }
 };
 
 schema.methods.checkGroup = function(checkGroup) {
@@ -333,6 +361,46 @@ schema.methods.addGroup = function(groupName) {
     }
 };
 
+schema.methods.getGroupsList = function() {
+    var groups = [];
+
+    this.groups.forEach(function(data) {
+        groups.push(data.name);
+    });
+
+    return groups;
+};
+
+schema.methods.updateFields = function(fields) {
+    for (var param in fields) {
+        this[param] = fields[param];
+    }
+    this.save();
+};
+
+schema.methods.getAvatars = function() {
+    var avatars = [];
+
+    if (this.avatar) {
+        avatars.push(config.host + '/v1/artifact/avatar/' + this.email);
+    }
+
+    avatars = avatars.concat([
+        'https://www.gravatar.com/avatar/' +
+            crypto.createHash('md5').update(this.email).digest('hex') +
+            '?d=404',
+        'https://api-avatar.trove.com/v1/avatar/' +
+            this.email +
+            '?fallback=true'
+    ]);
+
+    return avatars;
+};
+
+schema.methods.getResume = function() {
+    return config.host + '/v1/artifact/resume/' + this.email;
+};
+
 // Password middleware to update passwords with bcrypt when needed
 var passwordMiddleware = function(next) {
     var user = this;
@@ -355,6 +423,8 @@ var passwordMiddleware = function(next) {
 schema.pre('save', passwordMiddleware);
 schema.pre('findOneAndUpdate', passwordMiddleware);
 schema.pre('update', passwordMiddleware);
+
+schema.plugin(sanitizerPlugin);
 
 // Initialize the model with the schema, and export it
 var model = mongoose.model('User', schema);

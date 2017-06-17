@@ -22,13 +22,12 @@ const Wrapper = styled.div`
 `;
 
 class ChatSidebar extends React.Component {
-
     render() {
         return (
             <Wrapper>
-                <div style={{height: '101%'}}></div>
+                <div style={{ height: '101%' }} />
             </Wrapper>
-        )
+        );
     }
 }
 
