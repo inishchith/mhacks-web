@@ -9,13 +9,10 @@ export default class AnnouncementsThunks {
             return AnnouncementsRequests.loadAnnouncements().then(response => {
                 if (response.status == 200) {
                     response.json().then(json => {
-                        //const { user } = json;
-                        console.log(json);
+                        const { announcements } = json;
                         dispatch(
                             AnnouncementsPureActions.loadAnnouncementsSuccess(
-                                {
-
-                                },
+                                announcements,
                                 json.message
                             )
                         );
