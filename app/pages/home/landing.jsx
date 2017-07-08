@@ -2,16 +2,37 @@ import React from 'react';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
 const Logo = require('../../../static/icons/x-logo.png');
-import { devices } from '../../styles';
+const Decorations = require('../../../static/icons/landing-decorations.svg');
+// import { devices } from '../../styles';
 
 const Wrapper = styled.div`
     background: ${props => props.theme.secondary};
+    top: 80px;
+    left: 0;
+    right: 0;
+    
     padding: 0;
     height: calc(100vh - 80px);
 `;
 
+const DecorationWrapper = styled.div`
+    position: absolute;
+    background: url(${Decorations});
+    background-position: center 100%;
+    background-repeat: no-repeat;
+    top: 80px;
+    width: 100vw;
+    zIndex: 2;
+    height: 100vh;
+    padding: 0;
+`;
+
 const Container = styled.div`
-    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 80%;
     width: calc(100% - 60px);
     maxWidth: 1200px;
     margin: 0 auto;
@@ -20,18 +41,7 @@ const Container = styled.div`
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    
-    ${devices.tablet`
-        width: calc(100% - 100px);
-    `}
-
-    ${devices.desktop`
-        width: calc(100% - 140px);
-    `}
-
-    ${devices.giant`
-        width: calc(100% - 160px);
-    `}
+    width: 100%;
 `;
 
 const LogoImage = styled.img`
@@ -39,33 +49,20 @@ const LogoImage = styled.img`
     width: auto;
     max-height: 50%;
     max-width: 90%;
-    
-    margin-bottom: 40px;
+    marginLeft: auto;
+    marginRight: auto;
+
 `;
 
-const Text = styled.h2`
-    fontSize: 24px;
-    color: white;
-    text-align: center;
-    fontWeight: 500;
-    textAlign: center;
-    padding: 0 10vw;
-    margin: 5px 0;
-    
-    ${devices.tablet`
-        fontSize: 32px;
-    `}
-`;
 
 class Landing extends React.Component {
     render() {
         return (
             <Wrapper>
+                <DecorationWrapper />
                 <Container>
                     <LogoImage src={Logo} />
-                    <Text>MHacks X</Text>
-                    <Text>September 22nd - 24th, 2017</Text>
-                    <Text>University of Michigan North Campus</Text>
+
                 </Container>
             </Wrapper>
         );
