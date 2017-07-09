@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { devices } from '../../styles';
 import { connect } from 'react-redux';
 const Logo = require('../../../static/icons/x-logo.png');
 const Decorations = require('../../../static/icons/landing-decorations.svg');
@@ -7,33 +8,32 @@ const Decorations = require('../../../static/icons/landing-decorations.svg');
 
 const Wrapper = styled.div`
     background: ${props => props.theme.secondary};
-    top: 80px;
     left: 0;
     right: 0;
     
     padding: 0;
-    height: calc(100vh - 80px);
+    height: 75vh;
 `;
 
 const DecorationWrapper = styled.div`
     position: absolute;
     background: url(${Decorations});
-    background-position: center 100%;
     background-repeat: no-repeat;
-    top: 80px;
-    width: 100vw;
+    top: 0px;
+    left: 0px;
+    right: 0px;
     zIndex: 2;
-    height: 100vh;
+    width: 100%;
+    height: 1000px;
     padding: 0;
 `;
 
 const Container = styled.div`
     position: absolute;
-    top: 0;
     left: 0;
     right: 0;
-    height: 80%;
-    width: calc(100% - 60px);
+    top: -25%;
+    height: 1000px;
     maxWidth: 1200px;
     margin: 0 auto;
     
@@ -42,13 +42,21 @@ const Container = styled.div`
     align-items: center;
     justify-content: center;
     width: 100%;
+    
+    ${devices.tablet`
+        width: calc(100% - 100px);
+    `}
+    ${devices.desktop`
+        width: calc(100% - 140px);
+    `}
+    ${devices.giant`
+        width: calc(100% - 160px);
+    `}
 `;
 
 const LogoImage = styled.img`
     height: auto;
-    width: auto;
-    max-height: 50%;
-    max-width: 90%;
+    width: 200px;
     marginLeft: auto;
     marginRight: auto;
 
