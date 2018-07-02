@@ -1,12 +1,14 @@
 import React from 'react';
 import styled from 'styled-components';
+import theme from '../styles/theme.js';
 
 const Timer = styled.p`
-    color: darkorange;
-    fontWeight: bold;
-    fontSize: 30px;
-    margin: 20px 0;
-    textAlign: center;
+    color: ${theme.highlight};
+    font-weight: bold;
+    font-size: 30px;
+    padding: 20px 0;
+    margin: 0;
+    text-align: center;
 `;
 
 class Countdown extends React.Component {
@@ -31,9 +33,9 @@ class Countdown extends React.Component {
         } else {
             const t = Date.parse(this.props.date) - Date.parse(new Date());
 
-            const seconds = ('0' + Math.floor(t / 1000 % 60)).slice(-2);
-            const minutes = ('0' + Math.floor(t / 1000 / 60 % 60)).slice(-2);
-            const hours = ('0' + Math.floor(t / (1000 * 60 * 60) % 24)).slice(
+            const seconds = ('0' + Math.floor((t / 1000) % 60)).slice(-2);
+            const minutes = ('0' + Math.floor((t / 1000 / 60) % 60)).slice(-2);
+            const hours = ('0' + Math.floor((t / (1000 * 60 * 60)) % 24)).slice(
                 -2
             );
             const days = ('0' + Math.floor(t / (1000 * 60 * 60 * 24))).slice(

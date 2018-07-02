@@ -1,47 +1,54 @@
 import React from 'react';
 import styled from 'styled-components';
+import { devices } from '../styles';
 
 const Group = styled.div`
     display: flex;
-    flexDirection: row;
+    flex-direction: row;
     padding: 0;
     margin: 0;
 `;
 
 const TabItem = styled.div`
     flex: 1;
-    textAlign: center;
-    backgroundColor: ${props =>
+    text-align: center;
+    background-color: ${props =>
         props.active ? props.activeColor : 'transparent'};
     border: 3px solid ${props => props.activeColor};
+    border-right: none;
     color: ${props => (props.active ? 'white' : props.activeColor)};
-    padding: 14px 0;
-    fontSize: 18px;
-    fontWeight: 500;
+    padding: 10px 0;
+    font-size: 15px;
+    font-weight: 500;
 
     &:first-child {
-        borderTopLeftRadius: 20px;
-        borderBottomLeftRadius: 20px;
+        border-top-left-radius: 20px;
+        border-bottom-left-radius: 20px;
     }
 
     &:last-child {
-        borderTopRightRadius: 20px;
-        borderBottomRightRadius: 20px;
+        border-top-right-radius: 20px;
+        border-bottom-right-radius: 20px;
+        border-right: 3px solid ${props => props.activeColor};
     }
 
     &:hover {
-        backgroundColor: ${props => props.activeColor};
+        background-color: ${props => props.activeColor};
         color: white;
     }
+
+    ${devices.tablet`
+        font-size: 18px;
+    `};
 `;
 
 class TabGroup extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
 
         this.clickMiddleware = this.clickMiddleware.bind(this);
         this.state = {
-            activeIndex: 0
+            activeIndex: props.defaultIndex || 0
         };
     }
 
@@ -70,11 +77,7 @@ class TabGroup extends React.Component {
             );
         });
 
-        return (
-            <Group>
-                {tabs}
-            </Group>
-        );
+        return <Group>{tabs}</Group>;
     }
 }
 

@@ -14,24 +14,24 @@ const Footer = styled.footer`
     position: relative;
     display: flex;
     padding: 1rem;
-    alignContent: space-between;
-    alignItems: center;
-    flexWrap: wrap;
+    align-content: space-between;
+    align-ttems: center;
+    flex-wrap: wrap;
 `;
 
 const Text = styled.h2`
-    fontSize: 16px;
-    marginBottom: 0;
-    textAlign: left;
+    font-size: 16px;
+    margin-bottom: 0;
+    text-align: left;
     flex: 1;
-    textAlign: center;
-    minWidth: 100%;
+    text-align: center;
+    min-width: 100%;
     order: 1;
     ${devices.tablet`
-        textAlign: left;
-        minWidth: 0;
+        text-align: left;
+        min-width: 0;
         order: 0;
-    `}
+    `};
 `;
 
 const HeaderLogo = styled.img`
@@ -44,13 +44,13 @@ const Flexer = styled.div`
     flex: 1;
     position: relative;
     display: flex;
-    justifyContent: center;
-    minWidth: 100%;
+    justify-content: center;
+    min-width: 100%;
     ${devices.tablet`
-        textAlign: left;
-        minWidth: 0;
-        ${props => (props.right ? 'justifyContent: flex-end;' : '')}
-    `}
+        text-align: left;
+        min-width: 0;
+        ${props => (props.right ? 'justify-content: flex-end;' : '')}
+    `};
 `;
 
 const Img100 = styled.img`
@@ -62,16 +62,17 @@ const ImgButtonWrapper = styled.div`
     height: 30px;
     width: 30px;
     margin: 10px;
-    textAlign: center;
+    text-align: center;
     display: block;
 `;
 
-const ImgButton = props =>
+const ImgButton = props => (
     <ImgButtonWrapper>
         <a href={props.href}>
             <Img100 {...props} />
         </a>
-    </ImgButtonWrapper>;
+    </ImgButtonWrapper>
+);
 
 class BlackoutFooter extends React.Component {
     render() {

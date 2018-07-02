@@ -1,7 +1,8 @@
 var router = require('express').Router(),
     Announcement = require('../../db/model/Announcement.js'),
     authMiddleware = require('../../middleware/auth.js'),
-    Responses = require('../../responses/api/announcement.js');
+    Responses = require('../../responses/api/announcement.js'),
+    PushNotification = require('../../db/model/PushNotification.js');
 
 function sortByDate(a, b) {
     return new Date(b.broadcastTime) - new Date(a.broadcastTime);
@@ -10,8 +11,8 @@ function sortByDate(a, b) {
 // Handles get requests for /v1/announcements
 router.get('/', function(req, res) {
     authMiddleware('admin', 'api', true, function() {
-        Announcement.find({}, '-_id -__v')
-            .byIsPublic()
+        Announcement.find()
+            .byIsPublic(req.query.since)
             .exec()
             .then(announcements => {
                 announcements.sort(sortByDate);
@@ -29,7 +30,8 @@ router.get('/', function(req, res) {
                 });
             });
     })(req, res, function() {
-        Announcement.find({}, '-_id -__v')
+        Announcement.find()
+            .since(req.query.since)
             .exec()
             .then(announcements => {
                 announcements.sort(sortByDate);
@@ -59,9 +61,20 @@ router.post('/', authMiddleware('admin', 'api'), function(req, res) {
                 isApproved: req.body.isApproved,
                 isSent: req.body.isSent
             })
-                .then(() => {
+                .then(announcement => {
+                    if (req.body.push) {
+                        PushNotification.create({
+                            title: announcement.title,
+                            body: announcement.body,
+                            category: announcement.category,
+                            isApproved: announcement.isApproved,
+                            broadcastTime: announcement.broadcastTime
+                        });
+                    }
+
                     res.send({
-                        status: true
+                        status: true,
+                        announcement: announcement
                     });
                 })
                 .catch(err => {
@@ -81,6 +94,32 @@ router.post('/', authMiddleware('admin', 'api'), function(req, res) {
         res.status(401).send({
             status: false,
             message: Responses.PERMISSIONS_REQUIRED
+        });
+    }
+});
+
+router.delete('/:id', authMiddleware('admin', 'api'), function(req, res) {
+    if (req.params.id) {
+        Announcement.findById(req.params.id)
+            .then(announcement => {
+                announcement.deleted = true;
+                announcement.save();
+
+                res.send({
+                    status: true,
+                    announcement: announcement
+                });
+            })
+            .catch(err => {
+                res.status(500).send({
+                    status: false,
+                    message: err
+                });
+            });
+    } else {
+        res.status(401).send({
+            status: false,
+            message: Responses.PARAMS_NOT_FOUND
         });
     }
 });

@@ -42,3 +42,8 @@ build/*
 .idea/
 
 *.env
+
+.vscode/
+
+keys/*
+!keys/.gitkeep

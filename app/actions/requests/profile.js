@@ -19,6 +19,10 @@ export default class ProfileRequests {
             formData.append('resume', files['resume']);
         }
 
+        if (files['avatar']) {
+            formData.append('avatar', files['avatar']);
+        }
+
         for (var key in body) {
             if (body.hasOwnProperty(key)) {
                 formData.append(key, body[key]);
@@ -42,6 +46,16 @@ export default class ProfileRequests {
                 'Content-Type': 'application/json'
             }),
             body: JSON.stringify({ email })
+        });
+    }
+
+    static loadForm(token) {
+        return fetch(endpoints.FORM + 'user', {
+            method: 'get',
+            headers: new Headers({
+                'Content-Type': 'application/json',
+                Authorization: 'Bearer ' + token
+            })
         });
     }
 }

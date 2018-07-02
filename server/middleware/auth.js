@@ -1,9 +1,17 @@
 var User = require('../db/model/User.js'),
     Responses = require('../responses/middleware/auth.js');
 
-module.exports = function(groupName, checkType, verifiedEmail, nextError) {
+module.exports = function(
+    groupName,
+    checkType,
+    verifiedEmail,
+    nextError,
+    requireAuthToken
+) {
     groupName = groupName || 'any';
     verifiedEmail = typeof verifiedEmail === 'boolean' ? verifiedEmail : true;
+    requireAuthToken =
+        typeof requireAuthToken === 'boolean' ? requireAuthToken : true;
     return function(req, res, next) {
         if (req.get('Authorization')) {
             var authorization = req.get('Authorization');
@@ -52,6 +60,15 @@ module.exports = function(groupName, checkType, verifiedEmail, nextError) {
                                     nextError
                                 );
                             });
+                    } else if (!requireAuthToken) {
+                        callNext(
+                            req,
+                            {
+                                fakeUser: true
+                            },
+                            '',
+                            next
+                        );
                     } else {
                         returnFailure(
                             res,
@@ -120,6 +137,15 @@ module.exports = function(groupName, checkType, verifiedEmail, nextError) {
                         nextError
                     );
                 });
+        } else if (!requireAuthToken) {
+            callNext(
+                req,
+                {
+                    fakeUser: true
+                },
+                '',
+                next
+            );
         } else {
             returnFailure(res, checkType, Responses.UNAUTHORIZED, nextError);
         }
@@ -151,10 +177,18 @@ function groupCheck(groupName, user) {
 }
 
 function callNext(req, user, token, next) {
-    req.name = user.name;
-    req.email = user.email;
-    req.groups = user.getGroupsList();
     req.authToken = token;
+    if (user.fakeUser) {
+        req.name = '';
+        req.email = '';
+        req.groups = [];
+    } else {
+        req.name = user.name;
+        req.email = user.email;
+        req.groups = user.getGroupsList();
+        req.user = user;
+    }
+
     next();
 }
 

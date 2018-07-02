@@ -5,42 +5,38 @@ const CenteredContainer = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    
+
     width: calc(100% - 60px);
-    maxWidth: 1200px;
+    max-width: 1200px;
     margin: 0 auto;
-    
+
     z-index: 98;
-    
+
     ${devices.tablet`
         width: calc(100% - 100px);
-    `}
-
-    ${devices.desktop`
+    `} ${devices.desktop`
         width: calc(100% - 140px);
-    `}
-
-    ${devices.giant`
+    `} ${devices.giant`
         width: calc(100% - 160px);
-    `}
+    `};
 `;
 
 const SectionHeader = styled.h2`
-    fontSize: 42px;
+    font-size: 42px;
     color: ${props => props.theme.highlight};
-    textTransform: uppercase;
+    text-transform: uppercase;
     text-align: center;
-    fontWeight: 500;
-    textAlign: center;
-    
+    font-weight: 500;
+    text-align: center;
+
     ${devices.small`
-    fontSize: 48px;
-    `}
+    font-size: 48px;
+    `};
 `;
 
 const SectionBody = styled.p`
     color: white;
-    fontSize: 16px;
+    font-size: 16px;
     max-width: 600px;
 `;
 

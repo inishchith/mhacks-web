@@ -18,25 +18,25 @@ const Orb = styled.img`
         position: relative;
         left: 16%;
         top: -200px;
-    `}
+    `};
 `;
 
 const FlexBox = styled.div`
     display: flex;
-    flexWrap: wrap;
-    justifyContent: center;
+    flex-wrap: wrap;
+    justify-content: center;
 
     ${devices.tablet`
-        flexWrap: nowrap;
-    `}
+        flex-wrap: nowrap;
+    `};
 `;
 
 const Header = styled(SectionHeader)`
-    textAlign: center;
+    text-align: center;
 
     ${devices.tablet`
-        textAlign: left;
-    `}
+        text-align: left;
+    `};
 `;
 
 const Body = styled(SectionBody)`
@@ -45,11 +45,11 @@ const Body = styled(SectionBody)`
     ${devices.tablet`
         left: 15%;
         width: 105%;
-    `}
+    `};
 `;
 
 const EmailBody = styled(Body)`
-    fontWeight: 500;
+    font-weight: 500;
 `;
 
 const Link = styled.a`
@@ -58,28 +58,31 @@ const Link = styled.a`
 
 const StyledContainer = styled(Container)`
     ${devices.tablet`
-        marginBottom: -150px;
-    `}
+        margin-bottom: -150px;
+    `};
 `;
 
-export default () =>
+export default () => (
     <StyledContainer>
         <Header>Sponsorship</Header>
         <FlexBox>
             <div>
                 <Body>
                     MHacks is the gateway between you and the top tech talent in
-                    the world. Whether you come to network,
-                    promote brand awareness, or get feedback on a product or
-                    API, we'll provide the tools you need to make the
-                    most out of your experience.
+                    the world. Whether you come to network, promote brand
+                    awareness, or get feedback on a product or API, we'll
+                    provide the tools you need to make the most out of your
+                    experience.
                 </Body>
                 <EmailBody>
                     Interested in sponsoring? Want more information? Shoot us an
                     email at{' '}
-                    <Link href="mailto:kevin@mhacks.org">kevin@mhacks.org</Link>
+                    <Link href="mailto:sponsor@mhacks.org">
+                        sponsor@mhacks.org
+                    </Link>
                 </EmailBody>
             </div>
             <Orb src={OrbImage} />
         </FlexBox>
-    </StyledContainer>;
+    </StyledContainer>
+);

@@ -1,75 +1,87 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import styled from 'styled-components';
+import { connect } from 'react-redux';
 import { devices } from '../../styles';
+
+import {
+    PageContainer,
+    Container,
+    Countdown,
+    FullScreenAnimation
+} from '../../components';
+import LinkList from './link_list.jsx';
 import Announcements from './announcements.jsx';
-import { Countdown } from '../../components';
-import Chat from './chat';
+import Schedule from './schedule.jsx';
+import Mentorship from './mentorship.jsx';
+import Hardware from './hardware.jsx';
+import Resources from './resources.jsx';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
 
-const verticalMargin = 130;
+const PagePulled = styled(PageContainer)`
+    min-height: calc(100vh - 146px);
+    background-color: ${props => props.theme.secondary};
+    overflow: hidden;
+`;
 
-const Container = styled.div`
+const Row = styled.div`
+    height: 500px;
+    margin-bottom: 20px;
+`;
+
+const Double = styled.div`
     display: flex;
-    width: calc(100% - 40px);
-    height: calc(100vh - ${verticalMargin * 2}px);
-    margin: ${verticalMargin}px auto 0 auto;
-    overflowX: hidden;
-    flexDirection: column;
-    position: relative;
+    flex-direction: column;
 
-    ${devices.small`
-        width: calc(100% - 60px);
-    `}
+    div {
+        width: calc(100%);
+        margin-bottom: 20px;
+
+        ${devices.tablet`
+            width: calc(50% - 20px);
+            margin-bottom: 0;
+        `};
+    }
 
     ${devices.tablet`
-        margin: ${verticalMargin}px auto;
-    `}
-`;
-
-const Content = styled.div`
-    display: flex;
-    height: 100%;
-    width: 100%;
-    overflowX: hidden;
-    overflowY: hidden;
-`;
-
-const AnnouncementsContainer = styled.div`
-    width: 33%;
-    height: 100%;
-`;
-
-const ChatContainer = styled.div`
-    width: 67%;
-    height: 100%;
-    borderRadius: 8px;
-    backgroundColor: #999999;
+        flex-direction: row;
+        justify-content: space-between;
+    `};
 `;
 
 class LivePage extends React.Component {
     render() {
         return (
-            <Container>
-                <Countdown
-                    date={'Thur, 24 June 2017 21:00:00 EDT'}
-                    fallback="Submissions Closed!"
-                />
-                <Content>
-                    <AnnouncementsContainer>
+            <PagePulled>
+                <Container>
+                    <FullScreenAnimation />
+                    <Countdown
+                        date={this.props.configurationState.data.end_date}
+                        fallback="Submissions Closed!"
+                    />
+                    <LinkList />
+                    <Row>
                         <Announcements />
-                    </AnnouncementsContainer>
-                    <ChatContainer bgcolor={this.props.theme.teal}>
-                        <Chat />
-                    </ChatContainer>
-                </Content>
-            </Container>
+                    </Row>
+                    <Row>
+                        <Schedule />
+                    </Row>
+                    <Row>
+                        <Mentorship />
+                    </Row>
+                    <Double>
+                        <Hardware />
+                        <Resources />
+                    </Double>
+                </Container>
+            </PagePulled>
         );
     }
 }
 
 function mapStateToProps(state) {
     return {
-        theme: state.theme.data
+        theme: state.theme.data,
+        configurationState: state.configurationState
     };
 }
 

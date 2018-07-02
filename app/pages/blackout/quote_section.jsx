@@ -19,7 +19,7 @@ const QuoteSection = styled.div`
 
     ${devices.tablet`
          padding: 30px 55px 60px 50px;
-         maxWidth: 75%;
+         max-width: 75%;
     `}
 `;
 
@@ -27,25 +27,25 @@ const Quote = styled.div`
     position: relative;
     color: ${props => props.color};
     float: ${props => (props.position === 'left' ? 'left' : 'right')};
-    zIndex: 10;
+    z-index: 10;
     letter-spacing: 3px;
-    fontSize: 2.0em;
-    textAlign: left;
+    font-size: 2em;
+    text-align: left;
 
     ${devices.tablet`
-        textAlign: ${props => (props.position === 'left' ? 'left' : 'right')};
-        minWidth: 30%;
+        text-align: ${props => (props.position === 'left' ? 'left' : 'right')};
+        min-width: 30%;
         width: 100%;
-        fontSize: 2.5em;
-        paddingBottom: 10px;
-    `}
+        font-size: 2.5em;
+        padding-bottom: 10px;
+    `};
 `;
 
 const StartWrapper = styled.img`
     position: absolute;
     height: 20%;
     width: auto;
-    zIndex: 10;
+    z-index: 10;
     visibility: hidden;
     left: 0;
     top: 0;
@@ -53,11 +53,9 @@ const StartWrapper = styled.img`
     ${devices.tablet`
         height: 20%;
         visibility: visible;
-    `}
-
-    ${devices.giant`
+    `} ${devices.giant`
         height: 25%;
-    `}
+    `};
 `;
 
 const EndWrapper = styled.img`
@@ -73,42 +71,34 @@ const EndWrapper = styled.img`
         visibility: visible;
         right: 3%;
         bottom: 10%;
-    `}
-
-    ${devices.desktop`
+    `} ${devices.desktop`
         bottom: 12%;
-    `}
-
-    ${devices.giant`
+    `} ${devices.giant`
         height: 25%;
-    `}
+    `};
 `;
 
 const CompanyName = styled.div`
     position: relative;
     color: #a3a3a3;
-    fontStyle: italic;
+    font-style: italic;
     clear: both;
-    fontSize: 2.0em;
-    zIndex: 9999;
-    paddingBottom: 50px;
-    textAlign: left;
+    font-size: 2em;
+    z-index: 9999;
+    padding-bottom: 50px;
+    text-align: left;
 
     ${devices.tablet`
-      textAlign: ${props => (props.position === 'right' ? 'right' : 'left')};
-    `}
-
-    ${devices.desktop`
-      fontSize: 2.5em;
-      paddingBottom: 30px;
-    `}
-
-    ${devices.giant`
-      paddingBottom: 20px;
-    `}
+      text-align: ${props => (props.position === 'right' ? 'right' : 'left')};
+    `} ${devices.desktop`
+      font-size: 2.5em;
+      padding-bottom: 30px;
+    `} ${devices.giant`
+      padding-bottom: 20px;
+    `};
 `;
 
-export default () =>
+export default () => (
     <Wrapper>
         <QuoteSection>
             <StartWrapper src={StartIcon} />
@@ -122,6 +112,10 @@ export default () =>
                 The caliber and number of students that MHacks attracts is like
                 no other hacking event.
             </Quote>
-            <CompanyName position="right" dark> Walmart </CompanyName>
+            <CompanyName position="right" dark>
+                {' '}
+                Walmart{' '}
+            </CompanyName>
         </QuoteSection>
-    </Wrapper>;
+    </Wrapper>
+);

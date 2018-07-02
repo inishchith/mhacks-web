@@ -6,44 +6,52 @@ const InputField = styled.div`
     width: 100%;
     margin: 10px 0;
     display: flex;
-    flexDirection: column;
-    justifyContent: space-between;
-    alignItems: center;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    font-size: 1em;
 
     ${devices.small`
-        flexDirection: row;
-    `}
-
-    p {
+        flex-direction: row;
+        align-items: center;
+    `} p {
         width: ${props => props.labelWidth};
-        marginRight: 30px;
-        marginBottom: 4px;
+        margin-right: 30px;
+        margin-bottom: 4px;
+        overflow: hidden;
 
         ${devices.small`
-            marginBottom: 1em;
-        `}
+            margin-bottom: 1em;
+        `};
     }
 
-    select {
-        background: url(data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0Ljk1IDEwIj48ZGVmcz48c3R5bGU+LmNscy0xe2ZpbGw6I2ZmZjt9LmNscy0ye2ZpbGw6IzQ0NDt9PC9zdHlsZT48L2RlZnM+PHRpdGxlPmFycm93czwvdGl0bGU+PHJlY3QgY2xhc3M9ImNscy0xIiB3aWR0aD0iNC45NSIgaGVpZ2h0PSIxMCIvPjxwb2x5Z29uIGNsYXNzPSJjbHMtMiIgcG9pbnRzPSIxLjQxIDQuNjcgMi40OCAzLjE4IDMuNTQgNC42NyAxLjQxIDQuNjciLz48cG9seWdvbiBjbGFzcz0iY2xzLTIiIHBvaW50cz0iMy41NCA1LjMzIDIuNDggNi44MiAxLjQxIDUuMzMgMy41NCA1LjMzIi8+PC9zdmc+) no-repeat 95% 50%;
-        paddingLeft: 10px;
-        appearance: none;
-        borderColor: rgb(215, 215, 215);
-        flexGrow: 1;
-        height: 44px;
-    }
-
-    input {
-        flexGrow: 1;
-        paddingLeft: 10px;
-        height: 44px;
+    .Select-control {
+        border: 1px solid ${props => (props.hasError ? 'red' : '#ccc')};
     }
 `;
 
-const LabeledInput = props =>
-    <InputField labelWidth={props.labelWidth || '100px'}>
-        <p>{props.label}</p>
-        {React.Children.toArray(props.children)}
-    </InputField>;
+const P = styled.p`
+    color: ${props => (props.theme ? props.theme.textColor : 'black')};
+`;
+
+const ChildContainer = styled.div`
+    flex-grow: 1;
+    width: 100%;
+`;
+
+const LabeledInput = props => (
+    <InputField
+        labelWidth={props.labelWidth || '60%'}
+        hasError={props.hasError}
+    >
+        <P theme={props.theme}>
+            {props.label}
+            {props.required ? '*' : ''}
+        </P>
+        <ChildContainer>
+            {React.Children.toArray(props.children)}
+        </ChildContainer>
+    </InputField>
+);
 
 export default LabeledInput;

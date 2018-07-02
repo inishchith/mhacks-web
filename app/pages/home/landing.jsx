@@ -8,31 +8,27 @@ const Wrapper = styled.div`
     background: ${props => props.theme.secondary};
     padding: 0;
     height: calc(100vh - 80px);
-    zIndex: 98;
+    z-index: 98;
 `;
 
 const Container = styled.div`
     height: 100%;
     width: calc(100% - 60px);
-    maxWidth: 1200px;
+    max-width: 1200px;
     margin: 0 auto;
-    
+
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    
+
     ${devices.tablet`
         width: calc(100% - 100px);
-    `}
-
-    ${devices.desktop`
+    `} ${devices.desktop`
         width: calc(100% - 140px);
-    `}
-
-    ${devices.giant`
+    `} ${devices.giant`
         width: calc(100% - 160px);
-    `}
+    `};
 `;
 
 const LogoImage = styled.img`
@@ -40,36 +36,36 @@ const LogoImage = styled.img`
     width: auto;
     max-height: 50%;
     max-width: 90%;
-    
+
     margin-bottom: 20px;
     z-index: 99;
 `;
 
 const Text = styled.h2`
-    fontSize: 22px;
+    font-size: 22px;
     color: white;
     text-align: center;
-    fontWeight: 500;
-    textAlign: center;
+    font-weight: 500;
+    text-align: center;
     padding: 0 10vw;
     margin: 5px 0;
-    
+
     ${devices.tablet`
-        fontSize: 28px;
-    `}
+        font-size: 28px;
+    `};
 `;
 
 const MLHBanner = styled.a`
-    display:block;
-    width:60px;
-    position:absolute;
-    left:10px;
-    top:80px;
-    z-index:99
+    display: block;
+    width: 60px;
+    position: absolute;
+    left: 31px;
+    top: 80px;
+    z-index: 99;
 `;
 
 const MLHBannerImage = styled.img`
-    width:100%;
+    width: 100%;
 `;
 
 class Landing extends React.Component {

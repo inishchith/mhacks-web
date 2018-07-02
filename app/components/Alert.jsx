@@ -2,10 +2,10 @@ import React from 'react';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
-    color: #d8000c;
-    background-color: #ffbaba;
-    textAlign: center;
-    borderRadius: 10px;
+    color: ${props => props.color};
+    background-color: ${props => props.backgroundColor};
+    text-align: center;
+    border-radius: 10px;
 `;
 
 const Message = styled.p`
@@ -15,8 +15,16 @@ const Message = styled.p`
 
 class Alert extends React.Component {
     render() {
+        // default to negative colors
+        var backgroundColor = '#ffbaba';
+        var color = '01ff70';
+
+        if (this.props.positive) {
+            backgroundColor = '#01ff70';
+        }
+
         return (
-            <Wrapper style={{ ...this.props.style }}>
+            <Wrapper backgroundColor={backgroundColor} color={color}>
                 <Message>{this.props.message}</Message>
             </Wrapper>
         );

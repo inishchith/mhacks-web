@@ -4,49 +4,49 @@ import { devices } from '../styles';
 
 const Container = styled.div`
     display: block;
-    textAlign: center;
-    fontSize: 14px;
+    text-align: center;
+    font-size: 14px;
 `;
 
 const SelectionContainer = styled.div`
     display: flex;
-    flexDirection: row;
-    justifyContent: flex-start;
-    alignItems: stretch;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: stretch;
     border: 3px solid ${props => props.defaultColor};
     position: relative;
 
     &:hover {
         border: 3px solid ${props => props.hoverColor};
-        transition: all .2s ease-in-out;
+        transition: all 0.2s ease-in-out;
 
         .upload-button {
-            backgroundColor: ${props => props.hoverColor};
+            background-color: ${props => props.hoverColor};
             color: white;
-            transition: all .2s ease-in-out;
+            transition: all 0.2s ease-in-out;
         }
     }
 `;
 
 const Button = styled.div`
     order: 1;
-    backgroundColor: ${props => props.backgroundColor};
+    background-color: ${props => props.backgroundColor};
     color: white;
     padding: 12px 10px;
 
     ${devices.small`
         padding: 12px 20px;
-    `}
+    `};
 `;
 
 const FileName = styled.div`
     order: 2;
-    flexGrow: 1;
+    flex-grow: 1;
     padding: 12px;
 `;
 
 const Input = styled.input`
-    zIndex: 100;
+    z-index: 100;
     cursor: pointer;
     position: absolute;
     height: 100%;
@@ -98,7 +98,7 @@ class FileUpload extends React.Component {
                             this.state.fileSelected ? activeColor : defaultColor
                         }
                     >
-                        Upload Resume
+                        Upload {this.props.fileTitle}
                     </Button>
                     <FileName>
                         {this.state.fileSelected

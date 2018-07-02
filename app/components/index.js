@@ -1,5 +1,4 @@
 import TextSubmit from './TextSubmit.jsx';
-import InputText from './InputText.jsx';
 import Container from './Container.jsx';
 import VideoPlayer from './VideoPlayer.jsx';
 import ExpandingItem from './ExpandingItem.jsx';
@@ -11,10 +10,15 @@ import LabeledInput from './LabeledInput.jsx';
 import LabeledTextarea from './LabeledTextarea.jsx';
 import PageContainer from './PageContainer.jsx';
 import Countdown from './Countdown.jsx';
+import ProfilePicture from './ProfilePicture.jsx';
+import MHForm from './MHForm.jsx';
+import Input from './Input.jsx';
+import InputText from './InputText';
+import SponsorLogos from './SponsorLogos';
+import FullScreenAnimation from './FullScreenAnimation.jsx';
 
 export {
     TextSubmit,
-    InputText,
     Container,
     VideoPlayer,
     ExpandingItem,
@@ -25,5 +29,11 @@ export {
     LabeledInput,
     LabeledTextarea,
     PageContainer,
-    Countdown
+    Countdown,
+    ProfilePicture,
+    InputText,
+    SponsorLogos,
+    MHForm,
+    Input,
+    FullScreenAnimation
 };

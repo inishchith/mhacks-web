@@ -14,11 +14,11 @@ const Favicon = require('../../../static/blackout/favicon.png');
 
 /* Containers */
 const Page = styled.div`
-    backgroundColor: black;
+    background-color: black;
     width: 100%;
     height: 100%;
-    color: #F1F7FF;
-    overflowX: hidden;
+    color: #f1f7ff;
+    overflowx: hidden;
 `;
 
 /* Styled elements */

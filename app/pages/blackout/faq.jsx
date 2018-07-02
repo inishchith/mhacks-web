@@ -11,46 +11,44 @@ const Wrapper = styled.div`
 `;
 
 const Header = styled(SectionHeader)`
-    textAlign: center;
+    text-align: center;
 `;
 
 const FaqSectionHeader = styled.h2`
-    fontSize: 18px;
-    textTransform: uppercase;
-    marginTop: 30px;
-    marginBottom: 5px;
+    font-size: 18px;
+    text-transform: uppercase;
+    margin-top: 30px;
+    margin-bottom: 5px;
     color: ${props => props.theme.pink};
 `;
 
 const Section = styled.div`
     display: flex;
-    flexWrap: wrap;
+    flex-wrap: wrap;
 `;
 
 const ExpandingItemWrapper = styled.div`
     display: inline-block;
     position: relative;
-    paddingRight: 30px;
+    padding-right: 30px;
     clear: both;
     width: 100%;
 
     ${devices.tablet`
         width: 50%;
-    `}
-
-    ${devices.giant`
+    `} ${devices.giant`
         width: 33%;
-    `}
+    `};
 `;
 
 const Link = styled.a`
     color: ${props => props.theme.teal};
-    textDecoration: none;
+    text-decoration: none;
 `;
 
 const FaqItem = connect(state => {
     return { theme: state.theme.data };
-})(props =>
+})(props => (
     <ExpandingItemWrapper>
         <ExpandingItem
             {...props}
@@ -59,7 +57,7 @@ const FaqItem = connect(state => {
             bodyColor={props.theme.pink}
         />
     </ExpandingItemWrapper>
-);
+));
 
 class BlackoutFaq extends React.Component {
     render() {
@@ -74,15 +72,13 @@ class BlackoutFaq extends React.Component {
                             body={
                                 <span>
                                     Participants (“hackers”) spend 36 hours
-                                    working in teams of
-                                    1 - 4 people to build or code projects
-                                    (“hacks”) they’re
-                                    excited about. There are workshops, mentors,
-                                    food, swag, and
-                                    buckets of coffee to guide you along the
-                                    way. You bring your ideas,
-                                    and we give you everything you need to make
-                                    them come to life. &nbsp;
+                                    working in teams of 1 - 4 people to build or
+                                    code projects (“hacks”) they’re excited
+                                    about. There are workshops, mentors, food,
+                                    swag, and buckets of coffee to guide you
+                                    along the way. You bring your ideas, and we
+                                    give you everything you need to make them
+                                    come to life. &nbsp;
                                     <Link
                                         href="https://drive.google.com/file/d/0B4fSxuPetYFGWjNLSng1QVdVdm8/view"
                                         target="_blank"
@@ -97,9 +93,8 @@ class BlackoutFaq extends React.Component {
                             body={
                                 <span>
                                     Common areas of focus include iOS or Android
-                                    apps, web apps,
-                                    and hardware hacks. Check out the hacks from
-                                    MHacks 9 on &nbsp;
+                                    apps, web apps, and hardware hacks. Check
+                                    out the hacks from MHacks 9 on &nbsp;
                                     <Link
                                         href="https://mhacks9.devpost.com/submissions"
                                         target="_blank"

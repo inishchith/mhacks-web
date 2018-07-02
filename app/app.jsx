@@ -14,14 +14,23 @@ import { routes } from './constants';
 import {
     Navigator,
     HomePage,
+    LivePage,
     Login,
     Logout,
-    Profile,
+    EditProfile,
     Apply,
-    BlackoutPage
+    BlackoutPage,
+    Reader,
+    Confirm,
+    MentorApply,
+    SpeakerApply,
+    Dashboard,
+    AdminPage,
+    TeamBuilding
 } from './pages';
 import { ConfigurationThunks } from './actions';
 import { connect } from 'react-redux';
+import { getUserMetadata } from './util/user.js';
 
 // polyfill Promise for IE browsers
 require('es6-promise').polyfill();
@@ -47,7 +56,23 @@ class AppProvider extends React.Component {
         this.props.dispatch(ConfigurationThunks.loadConfiguration());
     }
 
+    getMetadata() {
+        return getUserMetadata(store.getState().userState.data);
+    }
+
     render() {
+        const {
+            should_logout,
+            is_live_page_enabled,
+            is_team_building_enabled,
+            is_blackout_page_enabled
+        } = this.props.configurationState.data;
+
+        if (should_logout && localStorage.getItem('jwt')) {
+            localStorage.removeItem('jwt');
+            location.reload();
+        }
+
         if (!this.props.configurationState.fetched) {
             return <div />;
         }
@@ -55,27 +80,52 @@ class AppProvider extends React.Component {
         return (
             <Provider store={store}>
                 <ConnectedRouter history={history}>
-                    <Navigator>
+                    <Navigator
+                        renderHeaderFooter={
+                            !is_blackout_page_enabled ||
+                            location.pathname !== routes.HOME
+                        }
+                    >
                         <Switch>
                             <Route
                                 exact
                                 path={routes.HOME}
-                                component={HomePage}
+                                render={() => {
+                                    if (is_blackout_page_enabled) {
+                                        return (
+                                            <Redirect to={routes.SUBSCRIBE} />
+                                        );
+                                    } else {
+                                        return <HomePage />;
+                                    }
+                                }}
                             />
                             <Route
                                 exact
                                 path={routes.LOGIN}
                                 render={() => {
-                                    const userData = store.getState().userState
-                                        .data;
-
-                                    if (userData.isLoggedIn) {
-                                        return <Redirect to={routes.PROFILE} />;
+                                    if (this.getMetadata().isLoggedIn) {
+                                        return (
+                                            <Redirect to={routes.DASHBOARD} />
+                                        );
                                     }
 
                                     return <Login />;
                                 }}
                             />
+                            {is_live_page_enabled ? (
+                                <Route
+                                    exact
+                                    path={routes.LIVE}
+                                    render={() => {
+                                        if (this.getMetadata().isLoggedIn) {
+                                            return <LivePage />;
+                                        }
+
+                                        return <Login />;
+                                    }}
+                                />
+                            ) : null}
                             <Route
                                 exact
                                 path={routes.LOGOUT}
@@ -85,13 +135,43 @@ class AppProvider extends React.Component {
                             />
                             <Route
                                 exact
+                                path={routes.MENTOR_APPLICATION}
+                                render={() => {
+                                    if (this.getMetadata().isLoggedIn) {
+                                        return <MentorApply />;
+                                    }
+
+                                    return <Redirect to={routes.LOGIN} />;
+                                }}
+                            />
+                            <Route
+                                exact
+                                path={routes.SPEAKER_APPLICATION}
+                                render={() => {
+                                    if (this.getMetadata().isLoggedIn) {
+                                        return <SpeakerApply />;
+                                    }
+
+                                    return <Redirect to={routes.LOGIN} />;
+                                }}
+                            />
+                            <Route
+                                exact
                                 path={routes.PROFILE}
                                 render={() => {
-                                    const userData = store.getState().userState
-                                        .data;
+                                    if (this.getMetadata().isLoggedIn) {
+                                        return <EditProfile />;
+                                    }
 
-                                    if (userData.isLoggedIn) {
-                                        return <Profile />;
+                                    return <Redirect to={routes.LOGIN} />;
+                                }}
+                            />
+                            <Route
+                                exact
+                                path={routes.DASHBOARD}
+                                render={() => {
+                                    if (this.getMetadata().isLoggedIn) {
+                                        return <Dashboard />;
                                     }
 
                                     return <Redirect to={routes.LOGIN} />;
@@ -101,26 +181,165 @@ class AppProvider extends React.Component {
                                 exact
                                 path={routes.APPLY}
                                 render={() => {
-                                    const userData = store.getState().userState
-                                        .data;
-
-                                    if (
-                                        userData.isLoggedIn &&
-                                        userData.isEmailVerified
-                                    ) {
+                                    const {
+                                        isLoggedIn,
+                                        isEmailVerified
+                                    } = this.getMetadata();
+                                    if (isLoggedIn && isEmailVerified) {
                                         return <Apply />;
                                     }
 
-                                    if (
-                                        userData.isLoggedIn &&
-                                        !userData.isEmailVerified
-                                    ) {
+                                    if (isLoggedIn && !isEmailVerified) {
                                         return <Redirect to={routes.PROFILE} />;
                                     }
 
                                     return <Redirect to={routes.LOGIN} />;
                                 }}
                             />
+                            <Route
+                                exact
+                                path={routes.ADMIN}
+                                render={() => {
+                                    const {
+                                        isLoggedIn,
+                                        isAdmin
+                                    } = this.getMetadata();
+                                    if (isLoggedIn && isAdmin) {
+                                        return <AdminPage.Models />;
+                                    }
+
+                                    return <Redirect to={routes.LOGIN} />;
+                                }}
+                            />
+                            <Route
+                                path={'/admin/:model'}
+                                render={({ match }) => {
+                                    return (
+                                        <AdminPage.Model
+                                            model={match.params.model}
+                                        />
+                                    );
+                                }}
+                            />
+                            <Route
+                                exact
+                                path={routes.HACKER_READER}
+                                render={() => {
+                                    const {
+                                        isLoggedIn,
+                                        isReader,
+                                        isAdmin
+                                    } = this.getMetadata();
+                                    if (isLoggedIn && (isReader || isAdmin)) {
+                                        return <Reader.Hacker />;
+                                    }
+
+                                    return <Redirect to={routes.LOGIN} />;
+                                }}
+                            />
+                            <Route
+                                exact
+                                path={routes.MENTOR_READER}
+                                render={() => {
+                                    const {
+                                        isLoggedIn,
+                                        isReader,
+                                        isAdmin
+                                    } = this.getMetadata();
+                                    if (isLoggedIn && (isReader || isAdmin)) {
+                                        return <Reader.Mentor />;
+                                    }
+
+                                    return <Redirect to={routes.LOGIN} />;
+                                }}
+                            />
+                            <Route
+                                exact
+                                path={routes.SPEAKER_READER}
+                                render={() => {
+                                    const {
+                                        isLoggedIn,
+                                        isReader,
+                                        isAdmin
+                                    } = this.getMetadata();
+                                    if (isLoggedIn && (isReader || isAdmin)) {
+                                        return <Reader.Speaker />;
+                                    }
+
+                                    return <Redirect to={routes.LOGIN} />;
+                                }}
+                            />
+                            <Route
+                                exact
+                                path={routes.SPONSOR_READER}
+                                render={() => {
+                                    const {
+                                        isLoggedIn,
+                                        isReader,
+                                        isSponsor,
+                                        isAdmin
+                                    } = this.getMetadata();
+                                    if (
+                                        isLoggedIn &&
+                                        (isReader || isSponsor || isAdmin)
+                                    ) {
+                                        return <Reader.Sponsor />;
+                                    }
+
+                                    return <Redirect to={routes.LOGIN} />;
+                                }}
+                            />
+                            <Route
+                                exact
+                                path={routes.CONFIRM}
+                                render={() => {
+                                    const {
+                                        isLoggedIn,
+                                        isAccepted
+                                    } = this.getMetadata();
+                                    if (isLoggedIn && isAccepted) {
+                                        return <Confirm />;
+                                    }
+
+                                    if (isLoggedIn) {
+                                        return (
+                                            <Redirect to={routes.DASHBOARD} />
+                                        );
+                                    }
+
+                                    return <Redirect to={routes.LOGIN} />;
+                                }}
+                            />
+                            {is_team_building_enabled ? (
+                                <Route
+                                    exact
+                                    path={routes.TEAM_BUILDING}
+                                    render={() => {
+                                        const {
+                                            isLoggedIn,
+                                            isAccepted,
+                                            isConfirmed
+                                        } = this.getMetadata();
+                                        if (
+                                            isLoggedIn &&
+                                            isAccepted &&
+                                            isConfirmed
+                                        ) {
+                                            return <TeamBuilding />;
+                                        }
+
+                                        if (isLoggedIn) {
+                                            return (
+                                                <Redirect
+                                                    to={routes.DASHBOARD}
+                                                />
+                                            );
+                                        }
+
+                                        return <Redirect to={routes.LOGIN} />;
+                                    }}
+                                />
+                            ) : null}
                             <Route
                                 exact
                                 path={routes.SUBSCRIBE}

@@ -1,38 +1,61 @@
-/* eslint-disable */
-var mongoose = require('../index.js'),
-    config = require('../../../config/default.js'),
-    Schema = mongoose.Schema;
+var {
+        mongoose,
+        defaultOptions,
+        modifySchema,
+        defaultSchema
+    } = require('../index.js'),
+    escapeStringRegex = require('escape-string-regexp');
 
 // Define the document Schema
-var schema = new mongoose.Schema({
-    title: String,
-    body: {
-        type: String,
-        default: ''
-    },
-    broadcastTime: {
-        type: Date,
-        default: Date.now,
-        index: true
-    },
-    category: {
-        type: String,
-        enum: ['Emergency', 'Logistics', 'Food', 'Event', 'Sponsored']
-    },
-    isApproved: {
-        type: Boolean,
-        default: true
-    },
-    isSent: {
-        type: Boolean,
-        default: true
+var schema = new mongoose.Schema(
+    Object.assign({}, defaultSchema, {
+        title: {
+            type: String,
+            required: true
+        },
+        body: {
+            type: String,
+            required: true
+        },
+        broadcastTime: {
+            type: Date,
+            default: Date.now,
+            index: true
+        },
+        category: {
+            type: String,
+            enum: ['emergency', 'logistics', 'food', 'event', 'sponsored'],
+            default: 'logistics'
+        },
+        isApproved: {
+            type: Boolean,
+            default: false
+        },
+        isSent: {
+            type: Boolean,
+            default: false
+        }
+    }),
+    defaultOptions
+);
+
+// All fields are updateable as only admins have power to update.
+schema.statics.getUpdateableFields = function() {
+    return Object.keys(schema.obj);
+};
+
+schema.methods.updateFields = function(fields) {
+    for (var param in fields) {
+        this[param] = fields[param];
     }
-});
+    return this.save();
+};
 
 // Allow us to query by title
 schema.query.byTitle = function(title) {
+    var escapedTitle = escapeStringRegex(title);
     return this.findOne({
-        title: new RegExp(title, 'i')
+        title: new RegExp(escapedTitle, 'i')
     });
 };
 
@@ -77,15 +100,20 @@ schema.query.byIsSent = function() {
 };
 
 // Allow us to query for isApproved and isSent
-schema.query.byIsPublic = function() {
+schema.query.byIsPublic = function(since) {
     return this.find({
         isApproved: true,
         isSent: true,
         broadcastTime: {
-            $lte: Date.now()
+            $lte: new Date()
+        },
+        updatedAt: {
+            $gte: new Date(parseInt(since || 0))
         }
     });
 };
+
+modifySchema(schema);
 
 // Initialize the model with the schema, and export it
 var model = mongoose.model('Announcement', schema);

@@ -1,112 +1,249 @@
 var bcrypt = require('bcrypt'),
     jwt = require('jsonwebtoken'),
-    mongoose = require('../index.js'),
+    {
+        mongoose,
+        defaultOptions,
+        modifySchema,
+        defaultSchema
+    } = require('../index.js'),
     config = require('../../../config/default.js'),
     Email = require('../../interactors/email.js'),
     emailResponses = require('../../responses/api/email.js'),
     crypto = require('crypto'),
     sanitizerPlugin = require('mongoose-sanitizer-plugin'),
+    escapeStringRegex = require('escape-string-regexp'),
     secret = config.secret;
 
 // Define the document Schema
-var schema = new mongoose.Schema({
-    full_name: String,
-    email: {
-        type: String,
-        required: true,
-        index: {
-            unique: true
-        }
-    },
-    email_verified: Boolean,
-    application_submitted: Boolean,
-    verification_tokens: [
-        {
-            created_at: {
-                type: Date,
-                default: Date.now
+var schema = new mongoose.Schema(
+    Object.assign({}, defaultSchema, {
+        full_name: {
+            type: String,
+            form: {
+                user_editable: true,
+                label: 'Full Name',
+                placeholder: 'Hacker McHackface'
+            }
+        },
+        email: {
+            type: String,
+            required: true,
+            index: {
+                unique: true
             },
-            token: String,
-            tokenType: String
+            form: {
+                user_editable: true,
+                label: 'Email',
+                placeholder: 'hackathon@umich.edu'
+            }
+        },
+        email_verified: {
+            type: Boolean,
+            form: {
+                user_editable: false,
+                label: 'Email Verified'
+            }
+        },
+        application_submitted: {
+            type: Boolean,
+            form: {
+                user_editable: false,
+                label: 'Application Submitted'
+            }
+        },
+        verification_tokens: [
+            {
+                created_at: {
+                    type: Date,
+                    default: Date.now
+                },
+                token: String,
+                tokenType: String
+            }
+        ],
+        password: {
+            type: String,
+            required: true,
+            form: {
+                user_editable: true,
+                label: 'Password',
+                placeholder: 'hunter2'
+            }
+        },
+        tokens: [
+            {
+                created_at: {
+                    type: Date,
+                    default: Date.now
+                },
+                token: String
+            }
+        ],
+        old_tokens: [
+            {
+                created_at: {
+                    type: Date,
+                    default: Date.now
+                },
+                token: String
+            }
+        ],
+        created_at: {
+            type: Date,
+            default: Date.now
+        },
+        birthday: {
+            type: Date,
+            form: {
+                user_editable: true,
+                label: 'Date of Birth',
+                placeholder: 'mm/dd/yyyy'
+            }
+        },
+        major: {
+            type: String,
+            form: {
+                user_editable: true,
+                label: 'Major',
+                placeholder: 'e.g. Computer Science'
+            }
+        },
+        university: {
+            type: String,
+            form: {
+                user_editable: true,
+                label: 'University',
+                placeholder: 'e.g. University of Michigan'
+            }
+        },
+        groups: [
+            {
+                name: String
+            }
+        ],
+        meta: {
+            ip: String
+        },
+        avatar: {
+            type: String,
+            form: {
+                user_editable: true,
+                label: 'Avatar',
+                type_override: 'file'
+            }
+        },
+        resume: {
+            type: String,
+            form: {
+                user_editable: true,
+                label: 'Resume',
+                type_override: 'file'
+            }
+        },
+        github: {
+            type: String,
+            form: {
+                user_editable: true,
+                label: 'GitHub',
+                placeholder: 'https://github.com/'
+            }
+        },
+        linkedin: {
+            type: String,
+            form: {
+                user_editable: true,
+                label: 'LinkedIn',
+                placeholder: 'https://linkedin.com/in/'
+            }
+        },
+        devpost: {
+            type: String,
+            form: {
+                user_editable: true,
+                label: 'DevPost',
+                placeholder: 'https://devpost.com/'
+            }
+        },
+        portfolio: {
+            type: String,
+            form: {
+                user_editable: true,
+                label: 'Portfolio',
+                placeholder: 'https://'
+            }
+        },
+        tshirt: {
+            type: String,
+            enum: ['unselected', 'xs', 's', 'm', 'l', 'xl', '2xl', '3xl'],
+            form: {
+                user_editable: true,
+                select: ['', 'XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'],
+                label: 'T-Shirt'
+            }
+        },
+        race: {
+            type: String,
+            enum: [
+                'unselected',
+                'white',
+                'black',
+                'am-indian-alaskan',
+                'asian',
+                'hispanic',
+                'other',
+                'prefer-not'
+            ],
+            form: {
+                user_editable: true,
+                select: [
+                    '',
+                    'White',
+                    'Black',
+                    'American Indian/Alaskan',
+                    'Asian',
+                    'Hispanic',
+                    'Other',
+                    'Prefer not to answer'
+                ],
+                label: 'Race'
+            }
+        },
+        sex: {
+            type: String,
+            enum: ['unselected', 'male', 'female', 'non-binary', 'prefer-not'],
+            form: {
+                user_editable: true,
+                select: [
+                    '',
+                    'Male',
+                    'Female',
+                    'Non Binary',
+                    'Prefer not to answer'
+                ],
+                label: 'Sex'
+            }
+        },
+        online: {
+            type: Boolean,
+            default: false
         }
-    ],
-    password: {
-        type: String,
-        required: true
-    },
-    tokens: [
-        {
-            created_at: {
-                type: Date,
-                default: Date.now
-            },
-            token: String
-        }
-    ],
-    old_tokens: [
-        {
-            created_at: {
-                type: Date,
-                default: Date.now
-            },
-            token: String
-        }
-    ],
-    created_at: {
-        type: Date,
-        default: Date.now
-    },
-    birthday: Date,
-    major: String,
-    university: String,
-    groups: [
-        {
-            name: String
-        }
-    ],
-    meta: {
-        ip: String
-    },
-    avatar: String,
-    resume: String,
-    github: String,
-    linkedin: String,
-    devpost: String,
-    portfolio: String,
-    tshirt: {
-        type: String,
-        enum: ['unselected', 'xs', 's', 'm', 'l', 'xl', '2xl', '3xl']
-    },
-    race: {
-        type: String,
-        enum: [
-            'unselected',
-            'white',
-            'black',
-            'am-indian-alaskan',
-            'asian',
-            'hispanic',
-            'other',
-            'prefer-not'
-        ]
-    },
-    sex: {
-        type: String,
-        enum: ['unselected', 'male', 'female', 'non-binary', 'prefer-not']
-    }
-});
+    }),
+    defaultOptions
+);
 
 // Allow us to query by name
 schema.query.byName = function(name) {
+    var escapedName = escapeStringRegex(name);
     return this.findOne({
-        full_name: new RegExp(name, 'i')
+        full_name: new RegExp(escapedName, 'i')
     });
 };
 
 // Allow us to query by email
 schema.query.byEmail = function(email) {
+    var escapedEmail = escapeStringRegex(email);
     return this.findOne({
-        email: new RegExp(email, 'i')
+        email: new RegExp(escapedEmail, 'i')
     });
 };
 
@@ -178,7 +315,7 @@ schema.methods.generateNewToken = function() {
         },
         secret,
         {
-            expiresIn: '28d'
+            expiresIn: config.token_expiration + 'd'
         }
     );
 
@@ -318,8 +455,8 @@ schema.methods.sendVerificationEmail = function() {
             {
                 confirmation_url:
                     config.host +
-                        '/v1/auth/verify/' +
-                        this.generateEmailVerificationToken(),
+                    '/v1/auth/verify/' +
+                    this.generateEmailVerificationToken(),
                 FIRST_NAME: this.full_name
                     ? this.full_name.split(' ')[0]
                     : 'Hacker'
@@ -349,8 +486,8 @@ schema.methods.sendPasswordResetEmail = function() {
             {
                 update_password_url:
                     config.host +
-                        '/auth/passwordreset/' +
-                        this.generatePasswordResetToken()
+                    '/auth/passwordreset/' +
+                    this.generatePasswordResetToken()
             },
             config.password_reset_email_subject,
             this.email,
@@ -430,7 +567,10 @@ schema.methods.getAvatars = function() {
 
     avatars = avatars.concat([
         'https://www.gravatar.com/avatar/' +
-            crypto.createHash('md5').update(this.email).digest('hex') +
+            crypto
+                .createHash('md5')
+                .update(this.email || '')
+                .digest('hex') +
             '?d=404',
         'https://api-avatar.trove.com/v1/avatar/' +
             this.email +
@@ -445,7 +585,7 @@ schema.methods.getResume = function() {
 };
 
 schema.methods.getProfile = function() {
-    return {
+    const profile = {
         email: this.email,
         email_verified: this.email_verified,
         application_submitted: this.application_submitted,
@@ -462,8 +602,81 @@ schema.methods.getProfile = function() {
         portfolio: this.portfolio,
         tshirt: this.tshirt,
         race: this.race,
-        sex: this.sex
+        sex: this.sex,
+        id: this._id,
+        online: this.online
     };
+
+    return new Promise(resolve => {
+        mongoose
+            .model('Application')
+            .find()
+            .byEmail(this.email)
+            .then(application => {
+                const {
+                    status,
+                    needs_reimbursement,
+                    reimbursement,
+                    university,
+                    major,
+                    experience
+                } = application;
+
+                profile.application_submitted = true;
+                profile.status = status;
+                profile.needs_reimbursement = needs_reimbursement;
+                profile.reimbursement = reimbursement;
+                profile.university = university;
+                profile.major = major;
+                profile.experience = experience;
+
+                if (status === 'accepted') {
+                    mongoose
+                        .model('Confirmation')
+                        .findOne({ user: this })
+                        .then(application => {
+                            profile.is_confirmed = application ? true : false;
+                            resolve(profile);
+                        });
+                } else {
+                    profile.is_confirmed = false;
+                    resolve(profile);
+                }
+            })
+            .catch(() => {
+                profile.application_submitted = false;
+                resolve(profile);
+            });
+    });
+};
+
+schema.virtual('avatars').get(function() {
+    return this.getAvatars();
+});
+
+schema.statics.getUpdateableFields = function(groups) {
+    var updateables = [];
+
+    for (var key in schema.obj) {
+        var field = schema.obj[key];
+
+        if (field.form) {
+            if (field.form.user_editable) {
+                updateables.push(key);
+            } else if (groups) {
+                groups.forEach(function(group) {
+                    if (
+                        field.form.auth_groups &&
+                        field.form.auth_groups.indexOf(group) !== -1
+                    ) {
+                        updateables.push(key);
+                    }
+                });
+            }
+        }
+    }
+
+    return updateables;
 };
 
 // Password middleware to update passwords with bcrypt when needed
@@ -490,6 +703,8 @@ schema.pre('findOneAndUpdate', passwordMiddleware);
 schema.pre('update', passwordMiddleware);
 
 schema.plugin(sanitizerPlugin);
+
+modifySchema(schema);
 
 // Initialize the model with the schema, and export it
 var model = mongoose.model('User', schema);
